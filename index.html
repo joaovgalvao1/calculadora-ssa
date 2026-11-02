@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Corrija o gabarito do SSA 3 2027 da UPE e calcule sua nota da 3ª fase e a média global acumulada.">
+<title>Calculadora SSA UPE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: duas colunas — folha de entrada (cartão-resposta) à esquerda, boletim de resultado fixo à direita; empilha no celular */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --ink:#14211f; --muted:#5b6b68; --line:#d6dfdc;
+  --accent:#0f6b5c; --accent-soft:#e1f0ec; --mark:#e8a317; --warn:#a4421b; --warn-soft:#fbeee6;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1716; --surface:#172221; --ink:#e6eeec; --muted:#93a5a1; --line:#2b3a38;
+  --accent:#4cc3a9; --accent-soft:#1c3631; --mark:#f0b94a; --warn:#f08a62; --warn-soft:#3a2219; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1716; --surface:#172221; --ink:#e6eeec; --muted:#93a5a1; --line:#2b3a38;
+  --accent:#4cc3a9; --accent-soft:#1c3631; --mark:#f0b94a; --warn:#f08a62; --warn-soft:#3a2219; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:28px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:24px}
+header h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.01em}
+header p{margin:8px 0 0;color:var(--muted);max-width:62ch}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:820px){.grid{grid-template-columns:1fr}}
+section.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:18px;min-width:0}
+h2{font-family:var(--f-display);font-weight:600;font-size:19px;margin:0}
+.group{display:grid;gap:10px}
+.group-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:13px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row label{font-weight:500}
+.row .sub{display:block;color:var(--muted);font-size:12.5px;font-weight:400}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}
+.stepper button{appearance:none;border:0;background:transparent;color:var(--ink);width:38px;height:40px;font-size:18px;cursor:pointer}
+.stepper button:hover{background:var(--accent-soft)}
+.stepper input{width:58px;text-align:center}
+input[type=number]{font-family:var(--f-mono);font-size:16px;height:40px;border:0;background:transparent;color:var(--ink);
+  font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.field input{width:110px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0 12px;text-align:right}
+input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.invalid{box-shadow:inset 0 0 0 2px var(--warn)}
+.err{color:var(--warn);font-size:12.5px;grid-column:1/-1;margin-top:-4px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 14px var(--f-body);padding:9px 14px;border-radius:10px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.result{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 16px)}
+.block{display:grid;gap:4px}
+.block h3{font-size:14px;margin:0 0 4px;font-weight:600;display:flex;gap:8px;align-items:center}
+.line{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.line span:first-child{min-width:0}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.num small{color:var(--muted);font-size:12px}
+.final{background:var(--accent-soft);border-radius:12px;padding:16px;display:grid;gap:4px}
+.final .label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:var(--f-mono)}
+.final .big{font-family:var(--f-display);font-weight:800;font-size:44px;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.pending{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:14px;font-size:14px}
+details{font-size:13.5px;color:var(--muted)}
+details summary{cursor:pointer;color:var(--ink);font-weight:500}
+details code{font-family:var(--f-mono);font-size:12.5px;color:var(--ink)}
+details ul{padding-left:18px;margin:8px 0 0;display:grid;gap:4px}
+.toast{font-size:13px;color:var(--accent);min-height:1em}
+.share{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+.share .toast{min-height:0}
+.sample{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--mark);color:#1d1606;padding:2px 8px;border-radius:999px}
+a{color:var(--accent)}
+.tabs{display:flex;gap:4px;margin-top:20px;border-bottom:1px solid var(--line)}
+.tabs a{padding:10px 14px;color:var(--muted);text-decoration:none;font-weight:600;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs a[aria-current="page"]{color:var(--ink);border-color:var(--mark)}
+.gab{display:grid;gap:22px}
+.gab-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.gab-top .block{min-width:0}
+.note{font-size:13.5px;color:var(--muted);max-width:70ch;margin:0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;width:max-content}
+.seg button{appearance:none;border:0;background:var(--surface);color:var(--ink);padding:8px 16px;font:500 14px var(--f-body);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.day{display:grid;gap:16px}
+.day>h3{font-family:var(--f-display);font-size:18px;margin:0}
+.area-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:2px 28px}
+@media (max-width:420px){.qs{grid-template-columns:1fr}}
+.q{display:flex;align-items:center;gap:10px;padding:5px 0;min-width:0}
+.q .n{font-family:var(--f-mono);width:2.6em;flex:none;color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px;line-height:1.1}
+.q .n .sub{display:block;font-size:10px}
+.bubbles{display:flex;gap:6px;flex:none}
+.b{appearance:none;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);font:600 13px var(--f-mono);cursor:pointer;display:grid;place-items:center;padding:0}
+.b:hover{border-color:var(--accent)}
+.b.sel{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.q.ok .b.sel{background:var(--accent);border-color:var(--accent)}
+.q.bad .b.sel{background:var(--warn);border-color:var(--warn)}
+.q.bad .b.key{border:2px solid var(--accent);color:var(--accent)}
+.q .st{font-size:12px;margin-left:auto;white-space:nowrap}
+.q.ok .st{color:var(--accent)}
+.q.bad .st{color:var(--warn)}
+.q.nula .st{color:var(--muted)}
+.q.nula .b{opacity:.35;cursor:not-allowed}
+.sendbar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);margin:0 -20px -20px;padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px));display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-radius:0 0 14px 14px}
+.counts{display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+.counts b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){.big{transition:color .2s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Sistema Seriado de Avaliação · UPE</div>
+    <h1>Calculadora de notas do SSA</h1>
+    <p>Corrija seu gabarito do SSA 3 ou informe os acertos diretamente. A nota da 3ª fase e a média global acumulada são calculadas na hora, com as fórmulas e pesos pré-definidos.</p>
+    <div class="share">
+      <button class="btn primary" id="share" type="button">Compartilhar com amigos</button>
+      <span class="toast" id="shareToast" role="status"></span>
+    </div>
+    <nav class="tabs" aria-label="Seções">
+      <a href="#calculadora" aria-current="page">Calculadora</a>
+      <a href="#gabarito">Corrigir gabarito</a>
+    </nav>
+  </header>
+
+  <div id="view-calc">
+  <div class="grid">
+    <section class="panel" aria-labelledby="t-in">
+      <div class="group-head">
+        <h2 id="t-in">Dados do candidato</h2>
+        <span class="sample" id="sampleTag">Exemplo preenchido</span>
+      </div>
+      <div class="toast" id="importToast" role="status"></div>
+
+      <div class="group">
+        <div class="group-head"><strong>SSA 3 · acertos por área</strong><span class="hint">Nota máxima por área: 100</span></div>
+        <div id="areas"></div>
+      </div>
+
+      <div class="group">
+        <div class="group-head"><strong>Redação e fases anteriores</strong></div>
+        <div class="row">
+          <label for="redacao">Redação<span class="sub">Nota de 0 a 10, de 1 em 1 ponto (convertida para 0 a 100)</span></label>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-for="redacao" aria-label="Diminuir nota da redação">−</button>
+            <input type="number" id="redacao" inputmode="numeric" min="0" max="10" step="1">
+            <button type="button" data-step="1" data-for="redacao" aria-label="Aumentar nota da redação">+</button>
+          </div>
+        </div>
+        <div class="row field">
+          <label for="f1">SSA 1 (F1)<span class="sub">Nota final da 1ª fase</span></label>
+          <input type="number" id="f1" inputmode="decimal" min="0" step="0.01">
+        </div>
+        <div class="row field">
+          <label for="f2">SSA 2 (F2)<span class="sub">Nota final da 2ª fase</span></label>
+          <input type="number" id="f2" inputmode="decimal" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="clear" type="button">Limpar tudo</button>
+        <button class="btn" id="example" type="button">Carregar exemplo</button>
+      </div>
+
+      <details>
+        <summary>Fórmulas aplicadas</summary>
+        <ul>
+          <li>Linguagens e Matemática (23 q.): <code>4,52 + (acertos − 1) × 4,34</code></li>
+          <li>Ciências Humanas (22 q.): <code>4,66 + (acertos − 1) × 4,54</code></li>
+          <li>Ciências da Natureza (27 q.): <code>3,80 + (acertos − 1) × 3,70</code></li>
+          <li>0 acertos em qualquer área: nota 0</li>
+          <li>MAS = soma das 4 áreas ÷ 4 · NPR = redação (0 a 10) × 10, na escala de 0 a 100</li>
+          <li>F3 = <code>((MAS × 7,5) + (NPR × 2,5)) ÷ 10</code></li>
+          <li>Média global = <code>((F1 × 3) + (F2 × 3) + (F3 × 4)) ÷ 10</code></li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="panel result" aria-labelledby="t-out" aria-live="polite">
+      <h2 id="t-out">Resultado</h2>
+      <div id="out"></div>
+      <div class="actions">
+        <button class="btn primary" id="copy" type="button">Copiar resultado</button>
+      </div>
+      <div class="toast" id="toast"></div>
+    </section>
+  </div>
+  </div>
+
+  <div id="view-gab" hidden>
+    <section class="panel gab" aria-labelledby="t-gab">
+      <div class="gab-top">
+        <div class="block">
+          <h2 id="t-gab">Correção do gabarito · SSA 3 2027</h2>
+          <p class="note">Gabarito preliminar divulgado pela UPE em 02/11/2026. Marque a alternativa que você assinalou em cada questão; a correção aparece na hora. Questão em branco conta como erro.</p>
+        </div>
+        <div class="block">
+          <span class="hint">Língua estrangeira (questões 18 a 23)</span>
+          <div class="seg" id="lang">
+            <button type="button" data-lang="ing" aria-pressed="true">Inglês</button>
+            <button type="button" data-lang="esp" aria-pressed="false">Espanhol</button>
+          </div>
+        </div>
+      </div>
+      <div id="days" class="gab"></div>
+      <p class="note">A questão 19 de Matemática foi anulada no gabarito preliminar e é contada como acerto para todos. Fontes: <a href="https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261102_-_GABARITO_PRELIMINAR_-_SSA_3_-_1_DIA_2027.pdf" target="_blank" rel="noopener">gabarito do 1º dia</a> · <a href="https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261102_-_GABARITO_PRELIMINAR_-_SSA_3_-_2_DIA_2027.pdf" target="_blank" rel="noopener">gabarito do 2º dia</a>.</p>
+      <div class="sendbar">
+        <div class="counts" id="counts"></div>
+        <div class="actions">
+          <button class="btn" id="gabClear" type="button">Limpar marcações</button>
+          <button class="btn primary" id="send" type="button">Enviar acertos para a calculadora</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const AREAS=[
+  {id:"ling",nome:"Linguagens e suas Tecnologias",total:23,base:4.52,inc:4.34},
+  {id:"hum",nome:"Ciências Humanas e Sociais Aplicadas",total:22,base:4.66,inc:4.54},
+  {id:"mat",nome:"Matemática e suas Tecnologias",total:23,base:4.52,inc:4.34},
+  {id:"nat",nome:"Ciências da Natureza e suas Tecnologias",total:27,base:3.80,inc:3.70}
+];
+const EXEMPLO={ling:17,hum:15,mat:14,nat:18,redacao:8,f1:68.5,f2:71.2};
+const $=id=>document.getElementById(id);
+const fmt=n=>n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+const notaArea=(a,ac)=>ac===0?0:a.base+(ac-1)*a.inc;
+
+// monta as linhas das áreas
+$("areas").innerHTML=AREAS.map(a=>`
+  <div class="row" data-row="${a.id}">
+    <label for="${a.id}">${a.nome}<span class="sub">${a.total} questões</span></label>
+    <div class="stepper">
+      <button type="button" data-step="-1" data-for="${a.id}" aria-label="Diminuir acertos">−</button>
+      <input type="number" id="${a.id}" inputmode="numeric" min="0" max="${a.total}" step="1">
+      <button type="button" data-step="1" data-for="${a.id}" aria-label="Aumentar acertos">+</button>
+    </div>
+  </div>`).join("");
+
+document.querySelectorAll("[data-step]").forEach(b=>b.addEventListener("click",()=>{
+  const inp=$(b.dataset.for),max=+inp.max;
+  let v=inp.value===""?0:parseInt(inp.value,10)||0;
+  v=Math.min(max,Math.max(0,v+ +b.dataset.step));
+  inp.value=v;onEdit();
+}));
+
+function setErr(el,msg){
+  const row=el.closest(".row");
+  el.classList.toggle("invalid",!!msg);
+  let e=row.querySelector(".err");
+  if(msg){ if(!e){e=document.createElement("div");e.className="err";row.appendChild(e);} e.textContent=msg; }
+  else if(e) e.remove();
+}
+
+function lerArea(a){
+  const el=$(a.id),raw=el.value.trim();
+  if(raw===""){setErr(el,"");return {vazio:true};}
+  const v=Number(raw);
+  if(!Number.isInteger(v)||v<0||v>a.total){setErr(el,`Informe um número inteiro de 0 a ${a.total}.`);return {erro:true};}
+  setErr(el,"");return {v};
+}
+function lerNota(id,max){
+  const el=$(id),raw=el.value.trim().replace(",",".");
+  if(raw===""){setErr(el,"");return {vazio:true};}
+  const v=Number(raw);
+  if(!isFinite(v)||v<0||(max!=null&&v>max)){setErr(el,max!=null?`Informe uma nota de 0 a ${max}.`:"Informe uma nota maior ou igual a 0.");return {erro:true};}
+  setErr(el,"");return {v};
+}
+
+let textoResultado="";
+function calcular(){
+  const ac=AREAS.map(lerArea);
+  const red=lerArea({id:"redacao",total:10}),f1=lerNota("f1",null),f2=lerNota("f2",null);
+  const faltando=[];
+  AREAS.forEach((a,i)=>{if(ac[i].vazio)faltando.push(`acertos em ${a.nome}`)});
+  if(red.vazio)faltando.push("nota da redação");
+  if(f1.vazio)faltando.push("nota do SSA 1");
+  if(f2.vazio)faltando.push("nota do SSA 2");
+  const temErro=[...ac,red,f1,f2].some(x=>x.erro);
+
+  if(temErro||faltando.length){
+    const msg=temErro?"Corrija os campos destacados para ver o cálculo."
+      :`Para calcular, informe: ${faltando.join(", ")}.`;
+    $("out").innerHTML=`<div class="pending">${msg}</div>`;
+    textoResultado="";$("copy").disabled=true;return;
+  }
+  $("copy").disabled=false;
+
+  const notas=AREAS.map((a,i)=>notaArea(a,ac[i].v));
+  const mas=notas.reduce((s,n)=>s+n,0)/4;
+  const npr=red.v*10;
+  const f3=((mas*7.5)+(npr*2.5))/10;
+  const media=((f1.v*3)+(f2.v*3)+(f3*4))/10;
+
+  $("out").innerHTML=`
+    <div class="block">
+      <h3>📊 Desempenho no SSA 3 (Provas e Redação)</h3>
+      ${AREAS.map((a,i)=>`<div class="line"><span>${a.nome}</span><span class="num">${ac[i].v} acertos — ${fmt(notas[i])} pts</span></div>`).join("")}
+      <div class="line"><span>Redação</span><span class="num">${red.v} <small>(ponderado: ${npr})</small></span></div>
+      <div class="line"><span>Média das provas (MAS)</span><span class="num">${fmt(mas)}</span></div>
+    </div>
+    <div class="block">
+      <h3>📈 Notas por Fase do SSA</h3>
+      <div class="line"><span>SSA 1</span><span class="num">${fmt(f1.v)}</span></div>
+      <div class="line"><span>SSA 2</span><span class="num">${fmt(f2.v)}</span></div>
+      <div class="line"><span>SSA 3 (Nota Final da F3)</span><span class="num">${fmt(f3)}</span></div>
+    </div>
+    <div class="final">
+      <span class="label">🎯 Resultado final · Média global acumulada</span>
+      <span class="big">${fmt(media)}</span>
+    </div>`;
+
+  textoResultado=[
+    "📊 Desempenho no SSA 3 (Provas e Redação)",
+    ...AREAS.map((a,i)=>` ${a.nome}: ${ac[i].v} acertos — ${fmt(notas[i])} pts`),
+    ` Redação: ${red.v} (Valor ponderado: ${npr})`,
+    "📈 Notas por Fase do SSA",
+    ` SSA 1: ${fmt(f1.v)}`,` SSA 2: ${fmt(f2.v)}`,` SSA 3 (Nota Final da F3): ${fmt(f3)}`,
+    "🎯 Resultado Final",` Média Global Acumulada: ${fmt(media)}`
+  ].join("\n");
+}
+
+function preencher(d){
+  AREAS.forEach(a=>$(a.id).value=d?d[a.id]:"");
+  ["redacao","f1","f2"].forEach(k=>$(k).value=d?d[k]:"");
+  $("sampleTag").hidden=!d; calcular();
+}
+function onEdit(){ $("sampleTag").hidden=true; calcular(); }
+document.querySelectorAll("input").forEach(i=>i.addEventListener("input",onEdit));
+$("clear").addEventListener("click",()=>{preencher(null);$("ling").focus();});
+$("example").addEventListener("click",()=>preencher(EXEMPLO));
+$("copy").addEventListener("click",()=>{
+  if(!textoResultado)return;
+  const textoFinal=textoResultado+"\n\n"+MSG_SHARE;
+  const ok=()=>{$("toast").textContent="Resultado copiado.";setTimeout(()=>$("toast").textContent="",2500);};
+  const fallback=()=>{const t=document.createElement("textarea");t.value=textoFinal;document.body.appendChild(t);t.select();
+    try{document.execCommand("copy");ok();}catch(e){$("toast").textContent="Não foi possível copiar. Selecione o texto manualmente.";}t.remove();};
+  try{navigator.clipboard.writeText(textoFinal).then(ok,fallback);}catch(e){fallback();}
+});
+const LINK=location.origin+"/";
+const MSG_SHARE=`Calcule sua nota do SSA da UPE em segundos! 🎯\nCorrija seu gabarito do SSA 3, informe a nota da redação e as notas do SSA 1 e SSA 2, e veja na hora sua nota da F3 e sua média global acumulada.\n\nAcesse: ${LINK}`;
+function copiar(texto,toastEl,msgOk){
+  const ok=()=>{toastEl.textContent=msgOk;setTimeout(()=>toastEl.textContent="",3000);};
+  const fallback=()=>{const t=document.createElement("textarea");t.value=texto;t.setAttribute("readonly","");t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();
+    let feito=false;try{feito=document.execCommand("copy");}catch(e){}
+    t.remove();if(feito)ok();else toastEl.textContent="Não foi possível copiar. Link: "+LINK;};
+  try{navigator.clipboard.writeText(texto).then(ok,fallback);}catch(e){fallback();}
+}
+$("share").addEventListener("click",()=>copiar(MSG_SHARE,$("shareToast"),"Mensagem com o link copiada. É só colar no WhatsApp ou onde quiser."));
+/* ===== Correção do gabarito (preliminar SSA 3 2027) — "*" = anulada ===== */
+const KEYS={
+  d1:"BEDDCCEAEEBCABEDB",            // Linguagens 1–17
+  ing:"BCDBCA", esp:"ACABCE",          // Linguagens 18–23
+  hum:"BDDBDEEABCCDEABCCDBDEC",        // Humanas 24–45
+  mat:"ACDDEBBDDCCCBCCDBB*ADEC",       // Matemática 1–23 (19 anulada)
+  nat:"CBDBEBBBABAEABDEADCCCEDECBB"    // Natureza 24–50
+};
+const GAREAS=[{id:"ling",dia:1,start:1},{id:"hum",dia:1,start:24},{id:"mat",dia:2,start:1},{id:"nat",dia:2,start:24}];
+const CURTO={ling:"Linguagens",hum:"Humanas",mat:"Matemática",nat:"Natureza"};
+let lang="ing",marks={};
+try{const s=JSON.parse(localStorage.getItem("ssa3-2027-gabarito")||"null");if(s){marks=s.marks||{};lang=s.lang==="esp"?"esp":"ing";}}catch(e){}
+const salvar=()=>{try{localStorage.setItem("ssa3-2027-gabarito",JSON.stringify({marks,lang}));}catch(e){}};
+const keyOf=id=>id==="ling"?KEYS.d1+KEYS[lang]:KEYS[id];
+const nomeArea=id=>AREAS.find(a=>a.id===id).nome;
+const contar=id=>[...keyOf(id)].reduce((c,k,i)=>c+((k==="*"||marks[`${id}-${i}`]===k)?1:0),0);
+
+function renderGab(){
+  $("days").innerHTML=[1,2].map(d=>`<div class="day"><h3>${d}º dia</h3>${
+    GAREAS.filter(g=>g.dia===d).map(g=>`<div class="group">
+      <div class="area-head"><strong>${nomeArea(g.id)}</strong><span class="num" id="c-${g.id}"></span></div>
+      <div class="qs">${[...keyOf(g.id)].map((_,i)=>{const n=g.start+i;
+        const lab=g.id==="ling"&&n>=18?`<span class="sub">${lang==="ing"?"ING":"ESP"}</span>`:"";
+        return `<div class="q" id="q-${g.id}-${i}"><span class="n">${String(n).padStart(2,"0")}${lab}</span>
+          <div class="bubbles" role="group" aria-label="Questão ${n} de ${CURTO[g.id]}">${[..."ABCDE"].map(l=>
+            `<button type="button" class="b" data-a="${g.id}" data-i="${i}" data-l="${l}" aria-label="Alternativa ${l}">${l}</button>`).join("")}</div>
+          <span class="st"></span></div>`;}).join("")}</div></div>`).join("")}</div>`).join("");
+  GAREAS.forEach(g=>[...keyOf(g.id)].forEach((_,i)=>pintar(g.id,i)));
+  atualizarContagem();
+}
+function pintar(a,i){
+  const row=$(`q-${a}-${i}`),key=keyOf(a)[i],m=marks[`${a}-${i}`];
+  row.className="q"+(key==="*"?" nula":m?(m===key?" ok":" bad"):"");
+  row.querySelectorAll(".b").forEach(b=>{const l=b.dataset.l;
+    b.classList.toggle("sel",l===m);b.classList.toggle("key",l===key);
+    b.setAttribute("aria-pressed",String(l===m));b.disabled=key==="*";});
+  row.querySelector(".st").textContent=key==="*"?"Anulada":!m?"":m===key?"✓ certa":`✗ era ${key}`;
+}
+function atualizarContagem(){
+  GAREAS.forEach(g=>$(`c-${g.id}`).textContent=`${contar(g.id)}/${keyOf(g.id).length} acertos`);
+  $("counts").innerHTML=GAREAS.map(g=>`<span>${CURTO[g.id]} <b>${contar(g.id)}</b></span>`).join("");
+}
+$("days").addEventListener("click",e=>{
+  const b=e.target.closest(".b");if(!b||b.disabled)return;
+  const k=`${b.dataset.a}-${b.dataset.i}`;
+  if(marks[k]===b.dataset.l)delete marks[k];else marks[k]=b.dataset.l;
+  pintar(b.dataset.a,+b.dataset.i);atualizarContagem();salvar();
+});
+function langUI(){document.querySelectorAll("#lang button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===lang)));}
+$("lang").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.dataset.lang===lang)return;
+  lang=b.dataset.lang;langUI();renderGab();salvar();});
+let limparPendente=null;
+$("gabClear").addEventListener("click",()=>{
+  const btn=$("gabClear");
+  if(!limparPendente){btn.textContent="Confirmar limpeza";limparPendente=setTimeout(()=>{btn.textContent="Limpar marcações";limparPendente=null;},4000);return;}
+  clearTimeout(limparPendente);limparPendente=null;btn.textContent="Limpar marcações";
+  marks={};renderGab();salvar();
+});
+$("send").addEventListener("click",()=>{
+  const eraExemplo=!$("sampleTag").hidden;
+  GAREAS.forEach(g=>$(g.id).value=contar(g.id));
+  if(eraExemplo)["redacao","f1","f2"].forEach(k=>$(k).value="");
+  $("sampleTag").hidden=true;calcular();
+  location.hash="#calculadora";window.scrollTo(0,0);
+  $("importToast").textContent="Acertos importados da correção do gabarito."+(eraExemplo?" Agora informe a redação e as notas do SSA 1 e SSA 2.":"");
+});
+function rota(){
+  const g=location.hash==="#gabarito";
+  $("view-gab").hidden=!g;$("view-calc").hidden=g;
+  document.querySelectorAll(".tabs a").forEach(a=>{
+    if(a.getAttribute("href")===(g?"#gabarito":"#calculadora"))a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
+}
+window.addEventListener("hashchange",rota);
+langUI();renderGab();rota();
+preencher(EXEMPLO);
+</script>
+</body>
+</html>
