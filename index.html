@@ -349,7 +349,7 @@ $("copy").addEventListener("click",()=>{
   try{navigator.clipboard.writeText(textoFinal).then(ok,fallback);}catch(e){fallback();}
 });
 const LINK="https://joaovgalvao1.github.io/calculadora-ssa/";
-const MSG_SHARE=`Calcule sua nota do SSA da UPE em segundos! 🎯\nCorrija seu gabarito do SSA 3, informe a nota da redação e as notas do SSA 1 e SSA 2, e veja na hora sua nota da F3 e sua média global acumulada.\n\nAcesse: ${LINK}`;
+const MSG_SHARE=`Calcule sua nota do SSA da UPE em segundos! 🎯\nCorrija seu gabarito do SSA 3, informe a nota da redação e as notas do SSA 1 e SSA 2, e veja na hora sua nota do SSA 3 e sua média global acumulada.\n\nAcesse: ${LINK}`;
 function copiar(texto,toastEl,msgOk){
   const ok=()=>{toastEl.textContent=msgOk;setTimeout(()=>toastEl.textContent="",3000);};
   const fallback=()=>{const t=document.createElement("textarea");t.value=texto;t.setAttribute("readonly","");t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();
