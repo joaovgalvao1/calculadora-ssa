@@ -1,0 +1,4 @@
+# Cloudflare Pages: o site estático fica na raiz e as rotas dinâmicas em functions/.
+name = "redacaocomleo-calculadora"
+pages_build_output_dir = "."
+compatibility_date = "2026-10-01"

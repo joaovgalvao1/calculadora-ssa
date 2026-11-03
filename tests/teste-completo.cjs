@@ -237,6 +237,19 @@ ok("Estimativa: usar na calculadora preenche a redação e abre a aba",await p.i
 await p.goto(url+'#competencias');await p.waitForTimeout(200);
 await p.click('#view-red button[data-c="A"][data-n="2"]');await p.click('#redClear');
 ok("Estimativa: limpar volta ao estado inicial",(await rout()).includes("Marque a nota")&&await p.locator('#view-red button[aria-pressed="true"]').count()===0);
+// ===== PREVIEW DOS LINKS (imagem fixa, título com a nota) =====
+if(MODE!=="artifact"){
+ const orig=new URL(url).origin;
+ const hn=await (await p.request.get(orig+'/nota/70.15')).text(),hg=await (await p.request.get(orig+'/')).text();
+ const og=(h,k)=>(h.match(new RegExp(`property="${k}" content="([^"]*)"`))||[])[1];
+ ok("Preview: /nota/70.15 tem título com a nota e imagem fixa",og(hn,"og:title")==="Tirei 70,15 na média global do SSA"&&og(hn,"og:image")===orig+"/img/preview.png",og(hn,"og:image"));
+ ok("Preview: página inicial usa a mesma imagem fixa",og(hg,"og:image")===orig+"/img/preview.png"&&og(hg,"og:title").includes("Redação com Léo"));
+ const ico=async f=>Buffer.from(await (await p.request.get(orig+'/img/'+f)).body());
+ const [fv,ap]=[await ico('favicon.png'),await ico('apple-touch-icon.png')];
+ ok("Ícones: favicon 64×64 e apple-touch-icon 180×180 (PNG) declarados no HTML",fv.readUInt32BE(16)===64&&ap.readUInt32BE(16)===180&&hg.includes('rel="icon" href="img/favicon.png"')&&hg.includes('rel="apple-touch-icon"'));
+ const img=Buffer.from(await (await p.request.get(orig+'/img/preview.png')).body());
+ ok("Preview: preview.png é um PNG de 1200×630",img.subarray(1,4).toString()==="PNG"&&img.readUInt32BE(16)===1200&&img.readUInt32BE(20)===630);
+}
 // ===== 6. INSTAGRAM =====
 await p.goto(url+'#calculadora');await p.waitForTimeout(200);
 const igs=await p.$$eval('a.insta',as=>as.map(a=>[a.href,a.target,a.rel,a.offsetParent!==null]));

@@ -1,6 +1,6 @@
 // Serve a calculadora (app.html) com as etiquetas de preview (Open Graph).
 // /             → preview geral do site
-// /nota/70.15   → preview com a média global de quem compartilhou
+// /nota/70.15   → título com a média global de quem compartilhou (a imagem é a mesma)
 import { lerNota, fmt } from "./_comum.js";
 
 export const config = { runtime: "edge" };
@@ -12,7 +12,8 @@ export function etiquetas(origin, m) {
   const desc = m == null
     ? "Corrija o gabarito do SSA 3, calcule sua média global e compare com as notas de corte por curso e cota. Por Redação com Léo."
     : "Calcule a sua com a Redação com Léo: corrija seu gabarito e veja sua média global em segundos.";
-  const img = `${origin}/api/og${m == null ? "" : `?m=${m.toFixed(2)}`}`;
+  // Imagem fixa (img/preview.png) em todos os links: o título já traz a nota; a imagem convida a pessoa a calcular a sua.
+  const img = `${origin}/img/preview.png`;
   const url = m == null ? `${origin}/` : `${origin}/nota/${m.toFixed(2)}`;
   return [
     ["og:type", "website"], ["og:site_name", "Redação com Léo"], ["og:locale", "pt_BR"],
