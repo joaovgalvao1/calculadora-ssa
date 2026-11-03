@@ -1,7 +1,7 @@
 /* ===== Inicialização e navegação entre abas ===== */
 function rota(){
-  const h=location.hash==="#gabarito"?"#gabarito":location.hash==="#cortes"?"#cortes":"#calculadora";
-  $("view-gab").hidden=h!=="#gabarito";$("view-cortes").hidden=h!=="#cortes";$("view-calc").hidden=h!=="#calculadora";
+  const h=["#gabarito","#competencias","#cortes"].includes(location.hash)?location.hash:"#calculadora";
+  $("view-gab").hidden=h!=="#gabarito";$("view-red").hidden=h!=="#competencias";$("view-cortes").hidden=h!=="#cortes";$("view-calc").hidden=h!=="#calculadora";
   document.querySelectorAll(".tabs a").forEach(a=>{
     if(a.getAttribute("href")===h)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");});
   if(h==="#cortes")renderCortes();

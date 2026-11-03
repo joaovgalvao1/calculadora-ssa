@@ -3,24 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Calculadora SSA UPE</title>
+<title>Calculadora SSA UPE · Redação com Léo</title>
 <meta name="description" content="Corrija o gabarito do SSA 3 2027 da UPE, calcule sua média global e compare com as notas de corte por curso e modalidade.">
+<meta name="theme-color" content="#8a5b64">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <!--OG-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="css/styles.css">
+<script src="js/tema.js"></script>
 <script src="js/config.js" defer></script>
 <script src="js/utils.js" defer></script>
 <script src="js/calculadora.js" defer></script>
 <script src="js/compartilhar.js" defer></script>
 <script src="js/gabarito.js" defer></script>
 <script src="js/cortes.js" defer></script>
+<script src="js/competencias.js" defer></script>
 <script src="js/main.js" defer></script>
 </head>
 <body>
 <div class="wrap">
   <header>
+    <button class="theme-btn" id="theme" type="button" aria-label="Mudar para o modo escuro"></button>
+    <a class="brand" href="#calculadora" aria-label="Redação com Léo"><img class="logo-claro" src="img/logo.png" width="191" height="84" alt="Redação com Léo"><img class="logo-escuro" src="img/logo-escuro.png" width="191" height="84" alt="Redação com Léo"></a>
     <div class="eyebrow">Sistema Seriado de Avaliação · UPE</div>
     <h1>Calculadora de notas do SSA</h1>
     <p>Corrija seu gabarito do SSA 3 ou informe os acertos diretamente. A nota da 3ª fase e a média global acumulada são calculadas na hora, com as fórmulas e pesos pré-definidos.</p>
@@ -31,6 +37,7 @@
     <nav class="tabs" aria-label="Seções">
       <a href="#calculadora" aria-current="page">Calculadora</a>
       <a href="#gabarito">Corrigir gabarito</a>
+      <a href="#competencias">Competências</a>
       <a href="#cortes">Notas de corte</a>
     </nav>
   </header>
@@ -96,8 +103,52 @@
         <a class="btn" href="#cortes">Comparar com notas de corte</a>
       </div>
       <div class="toast" id="toast"></div>
+      <div class="promo">
+        <p>A redação vale 25% da nota do SSA 3. Quer melhorar a sua?</p>
+        <a class="insta" href="https://www.instagram.com/redacaocomleo/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Siga @redacaocomleo no Instagram</a>
+      </div>
     </section>
   </div>
+  </div>
+
+  <div id="view-red" hidden>
+    <section class="panel" aria-labelledby="t-red">
+      <div class="block">
+        <h2 id="t-red">Competências da redação · SSA 3</h2>
+        <p class="note">A redação vale de 0,0 a 10,0 pontos, distribuídos em cinco competências. Toque na nota que você acha que receberia em cada uma para ver uma estimativa. É só uma simulação: a nota real é dada pela banca avaliadora.</p>
+      </div>
+      <div class="group">
+        <div class="group-head"><strong>Níveis de desempenho</strong><span class="hint">Cada competência recebe um nível, com sua pontuação</span></div>
+        <ul class="legenda"><li><b>I</b> Insuficiente <span>0,0</span></li><li><b>D</b> Deficitário <span>0,5</span></li><li><b>R</b> Regular <span>1,0</span></li><li><b>B</b> Bom <span>1,5</span></li><li><b>E</b> Excelente <span>2,0</span></li></ul>
+      </div>
+      <div class="crits">
+        <div class="crit">
+          <div><strong>Competência A</strong><span class="sub">Interpretação da proposta e eixos temáticos</span></div>
+          <div class="seg" role="group" aria-label="Nota da competência A"><button type="button" data-c="A" data-n="0.5" aria-pressed="false" aria-label="Deficitário, 0,5">0,5</button><button type="button" data-c="A" data-n="1" aria-pressed="false" aria-label="Regular, 1,0">1,0</button><button type="button" data-c="A" data-n="1.5" aria-pressed="false" aria-label="Bom, 1,5">1,5</button><button type="button" data-c="A" data-n="2" aria-pressed="false" aria-label="Excelente, 2,0">2,0</button></div>
+        </div>
+        <div class="crit">
+          <div><strong>Competência B</strong><span class="sub">Características do gênero dissertativo-argumentativo</span></div>
+          <div class="seg" role="group" aria-label="Nota da competência B"><button type="button" data-c="B" data-n="0.5" aria-pressed="false" aria-label="Deficitário, 0,5">0,5</button><button type="button" data-c="B" data-n="1" aria-pressed="false" aria-label="Regular, 1,0">1,0</button><button type="button" data-c="B" data-n="1.5" aria-pressed="false" aria-label="Bom, 1,5">1,5</button><button type="button" data-c="B" data-n="2" aria-pressed="false" aria-label="Excelente, 2,0">2,0</button></div>
+        </div>
+        <div class="crit">
+          <div><strong>Competência C</strong><span class="sub">Mobilização de informações e autoria</span></div>
+          <div class="seg" role="group" aria-label="Nota da competência C"><button type="button" data-c="C" data-n="0" aria-pressed="false" aria-label="Insuficiente, 0,0">0,0</button><button type="button" data-c="C" data-n="0.5" aria-pressed="false" aria-label="Deficitário, 0,5">0,5</button><button type="button" data-c="C" data-n="1" aria-pressed="false" aria-label="Regular, 1,0">1,0</button><button type="button" data-c="C" data-n="1.5" aria-pressed="false" aria-label="Bom, 1,5">1,5</button><button type="button" data-c="C" data-n="2" aria-pressed="false" aria-label="Excelente, 2,0">2,0</button></div>
+        </div>
+        <div class="crit">
+          <div><strong>Competência D</strong><span class="sub">Mecanismos gramaticais, lexicais e textualidade</span></div>
+          <div class="seg" role="group" aria-label="Nota da competência D"><button type="button" data-c="D" data-n="0" aria-pressed="false" aria-label="Insuficiente, 0,0">0,0</button><button type="button" data-c="D" data-n="0.5" aria-pressed="false" aria-label="Deficitário, 0,5">0,5</button><button type="button" data-c="D" data-n="1" aria-pressed="false" aria-label="Regular, 1,0">1,0</button><button type="button" data-c="D" data-n="1.5" aria-pressed="false" aria-label="Bom, 1,5">1,5</button><button type="button" data-c="D" data-n="2" aria-pressed="false" aria-label="Excelente, 2,0">2,0</button></div>
+        </div>
+        <div class="crit">
+          <div><strong>Competência E</strong><span class="sub">Norma-padrão do português brasileiro</span></div>
+          <div class="seg" role="group" aria-label="Nota da competência E"><button type="button" data-c="E" data-n="0" aria-pressed="false" aria-label="Insuficiente, 0,0">0,0</button><button type="button" data-c="E" data-n="0.5" aria-pressed="false" aria-label="Deficitário, 0,5">0,5</button><button type="button" data-c="E" data-n="1" aria-pressed="false" aria-label="Regular, 1,0">1,0</button><button type="button" data-c="E" data-n="1.5" aria-pressed="false" aria-label="Bom, 1,5">1,5</button><button type="button" data-c="E" data-n="2" aria-pressed="false" aria-label="Excelente, 2,0">2,0</button></div>
+        </div>
+      </div>
+      <div id="redOut" aria-live="polite"></div>
+      <div class="actions">
+        <button class="btn primary" id="redUse" type="button" disabled>Usar na calculadora</button>
+        <button class="btn" id="redClear" type="button">Limpar</button>
+      </div>
+    </section>
   </div>
 
   <div id="view-gab" hidden>
@@ -180,6 +231,10 @@
       <p class="note">Dados do processo seletivo anterior (SSA 2026), usados como referência para o SSA 2027. A nota de corte é a menor nota entre os convocados de cada etapa. Os dados de remanejamentos utilizados abrangem as notas dos convocados da lista de espera (remanejamento externo). Fontes do SSA 2026: listão de classificados, remanejamentos 1 a 10 e Edital CPCA/UPE nº 11/2025.</p>
     </div>
   </div>
+  <footer class="rodape">
+    <span>Calculadora da <strong>Redação com Léo</strong></span>
+    <a class="insta" href="https://www.instagram.com/redacaocomleo/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> @redacaocomleo</a>
+  </footer>
 </div>
 </body>
 </html>

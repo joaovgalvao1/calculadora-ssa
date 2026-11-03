@@ -4,10 +4,10 @@
 const ROTAS_OG=!!document.querySelector('meta[property="og:image"]');
 const LINK=CONFIG.linkPublico||location.origin+"/";
 // Topo: convite para o site (preview geral)
-const SITE_TITULO="Calculadora de notas do SSA";
-const SITE_TEXTO="Calculadora do SSA da UPE: corrija o gabarito do SSA 3, calcule sua média global e compare com as notas de corte do seu curso.";
+const SITE_TITULO="Calculadora de notas do SSA · Redação com Léo";
+const SITE_TEXTO="Calculadora do SSA da UPE, da Redação com Léo: corrija o gabarito do SSA 3, calcule sua média global e compare com as notas de corte do seu curso.";
 // Resultado: mensagem curta com a nota (preview com a média na imagem)
-const textoNota=m=>`Tirei ${fmt(m)} na média global do SSA! 🎯 E você? Calcule a sua:`;
+const textoNota=m=>`Tirei ${fmt(m)} na média global do SSA! 🎯 Calcule a sua com a Redação com Léo:`;
 const linkNota=m=>ROTAS_OG?`${LINK}nota/${(Math.round(m*100)/100).toFixed(2)}`:LINK;
 
 function copiar(texto,toastEl,msgOk){

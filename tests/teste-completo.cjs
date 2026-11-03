@@ -11,10 +11,10 @@ const res=[];let fails=0;
 const ok=(name,cond,info="")=>{res.push(`${cond?"PASS":"FAIL"}  ${name}${cond?"":"  -> "+info}`);if(!cond)fails++;};
 const fmt=n=>n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
 const area=(ac,b,i)=>ac===0?0:b+(ac-1)*i;
-function esperado(l,h,m,n,red,f1,f2){
+function esperado(l,h,m,n,red,ssa1,ssa2){
   const notas=[area(l,4.52,4.34),area(h,4.66,4.54),area(m,4.52,4.34),area(n,3.80,3.70)];
-  const mas=notas.reduce((a,b)=>a+b)/4,f3=(mas*7.5+red*10*2.5)/10;
-  return {notas,f3,media:(f1*3+f2*3+f3*4)/10};
+  const mas=notas.reduce((a,b)=>a+b)/4,ssa3=(mas*7.5+red*10*2.5)/10;
+  return {notas,ssa3,media:(ssa1*3+ssa2*3+ssa3*4)/10};
 }
 (async()=>{
 const b=await chromium.launch();
@@ -27,7 +27,7 @@ await p.goto(url);await p.waitForTimeout(400);
 
 // ===== 1. CALCULADORA =====
 const fill=async v=>{for(const [k,x] of Object.entries(v)){await p.fill('#'+k,String(x));}};
-const casos=[[17,15,14,18,8,68.5,71.2],[0,0,0,0,0,0,0],[23,22,23,27,10,100,100],[1,1,1,1,1,50,50],[12,9,20,5,6,55.3,61.75]];
+const casos=[[17,15,14,18,8,68.5,71.2],[0,0,0,0,0,0,0],[23,22,23,27,10,100,100],[1,1,1,1,1,50,50],[12,9,20,5,6,55.3,61.75],[17,15,14,18,7.5,68.5,71.2],[10,10,10,10,0.5,40,45]];
 for(const c of casos){
   await fill({ling:c[0],hum:c[1],mat:c[2],nat:c[3],redacao:c[4],ssa1:c[5],ssa2:c[6]});
   const out=await p.innerText('#out');const e=esperado(...c);
@@ -35,13 +35,14 @@ for(const c of casos){
   await p.click('#copy').catch(()=>{});await p.waitForTimeout(80);const cp=await p.evaluate(()=>navigator.clipboard.readText());
   const linkEsp=MODE==='artifact'?'claude.ai/artifact/':`/nota/${(Math.round(e.media*100)/100).toFixed(2)}`;
   ok(`Compartilhar resultado: mensagem curta com ${fmt(e.media)} e link certo`,cp.startsWith(`Tirei ${fmt(e.media)} na média global do SSA!`)&&cp.trim().split('\n').length===2&&cp.includes(linkEsp),cp);
-  ok(`Calc: F3=${fmt(e.f3)} e média=${fmt(e.media)} para ${c}`,out.includes(fmt(e.f3))&&out.includes(fmt(e.media)),out);
+  ok(`Calc: SSA 3=${fmt(e.ssa3)} e média=${fmt(e.media)} para ${c}`,out.includes(fmt(e.ssa3))&&out.includes(fmt(e.media)),out);
 }
-ok("Calc: máximo dá F3 100 e média 100",esperado(23,22,23,27,10,100,100).f3.toFixed(2)==="100.00"||true,"");
+ok("Calc: máximo dá SSA 3 100 e média 100",esperado(23,22,23,27,10,100,100).ssa3.toFixed(2)==="100.00"&&esperado(23,22,23,27,10,100,100).media.toFixed(2)==="100.00");
 // validação
 await fill({ling:24});ok("Valid: Linguagens 24 rejeitado",(await p.innerText('#out')).includes("Corrija"));
 await fill({ling:5,redacao:11});ok("Valid: redação 11 rejeitada",(await p.innerText('#out')).includes("Corrija"));
-await fill({redacao:"7.5"});ok("Valid: redação 7,5 rejeitada (só inteiros)",(await p.innerText('#out')).includes("Corrija"));
+for(const v of ["7.5","0.5","0","10"]){await fill({redacao:v});ok(`Valid: redação ${v} aceita (passo 0,5)`,!(await p.innerText('#out')).includes("Corrija"));}
+for(const v of ["7.3","7.25","10.5","-0.5"]){await fill({redacao:v});ok(`Valid: redação ${v} rejeitada (só de 0,5 em 0,5, de 0 a 10)`,(await p.innerText('#out')).includes("Corrija"));}
 await fill({redacao:7,ssa2:""});ok("Valid: falta SSA 2 pede o dado",(await p.innerText('#out')).includes("nota do SSA 2"));
 ok("Valid: copiar desativado com dados incompletos",await p.isDisabled('#copy'));
 // steppers
@@ -49,17 +50,21 @@ await p.fill('#nat','27');await p.click('[data-step="1"][data-for="nat"]');
 ok("Stepper: não passa do máximo (27)",await p.inputValue('#nat')==="27");
 await p.fill('#hum','0');await p.click('[data-step="-1"][data-for="hum"]');
 ok("Stepper: não fica negativo",await p.inputValue('#hum')==="0");
+await p.fill('#redacao','7');await p.click('[data-step="0.5"][data-for="redacao"]');
+ok("Stepper: redação sobe de 0,5 em 0,5",await p.inputValue('#redacao')==="7.5",await p.inputValue('#redacao'));
+await p.fill('#redacao','10');await p.click('[data-step="0.5"][data-for="redacao"]');
+ok("Stepper: redação não passa de 10",await p.inputValue('#redacao')==="10");
 // limpar
 await p.click('#clear');ok("Limpar: zera campos",await p.inputValue('#ling')===""&&await p.inputValue('#ssa1')==="");
 // copiar resultado
 await fill({ling:17,hum:15,mat:14,nat:18,redacao:8,ssa1:68.5,ssa2:71.2});
 await p.click('#copy');await p.waitForTimeout(200);
 const clip=await p.evaluate(()=>navigator.clipboard.readText());
-ok("Compartilhar resultado: sem boletim, só a mensagem curta",clip.startsWith("Tirei 70,15")&&!clip.includes("📊"),clip);
+ok("Compartilhar resultado: sem boletim, só a mensagem curta",clip.startsWith("Tirei 70,15")&&clip.includes("Redação com Léo")&&!clip.includes("📊"),clip);
 ok("Compartilhar resultado: aviso de mensagem copiada",(await p.innerText('#toast')).includes("copiada"));
 await p.click('#share');await p.waitForTimeout(200);
 const clip2=await p.evaluate(()=>navigator.clipboard.readText());
-ok("Compartilhar site: mensagem geral com link",clip2.startsWith("Calculadora do SSA da UPE")&&!clip2.includes("Tirei"),clip2);
+ok("Compartilhar site: mensagem geral com link",clip2.startsWith("Calculadora do SSA da UPE")&&clip2.includes("Redação com Léo")&&!clip2.includes("Tirei"),clip2);
 if(MODE==="artifact")ok("Compartilhar: link do artifact",clip2.includes("claude.ai/artifact/"),clip2);
 else ok("Compartilhar site: link = página inicial do site",clip2.trim().endsWith(new URL(url).origin+"/"),clip2);
 
@@ -210,6 +215,48 @@ ok("Celular: toque na barra mostra o balão",await p.isVisible('#cTip'));
 const tb=await p.$eval('#cTip',t=>{const r=t.getBoundingClientRect();return [r.left,r.right]});
 ok("Celular: balão cabe na tela",tb[0]>=0&&tb[1]<=390,tb.join());
 await p.click('h1');ok("Celular: tocar fora fecha o balão",await p.isHidden('#cTip'));
+
+// ===== 5. COMPETÊNCIAS DA REDAÇÃO (estimativa do aluno) =====
+await p.goto(url+'#competencias');await p.waitForTimeout(300);
+ok("Rota: #competencias mostra só as competências da redação",await p.isVisible('#view-red')&&!(await p.isVisible('#view-calc'))&&!(await p.isVisible('#view-gab'))&&!(await p.isVisible('#view-cortes')));
+ok("Competências: aba no menu e cinco competências A a E",(await p.innerText('nav.tabs')).includes("Competências")&&await p.locator('#view-red .crit').count()===5);
+const notasComp=await p.$$eval('#view-red .seg',us=>us.map(u=>[...u.querySelectorAll('button')].map(l=>l.dataset.n).join(" ")));
+ok("Competências: notas por competência (A e B de 0,5 a 2,0; C, D e E de 0,0 a 2,0)",JSON.stringify(notasComp)===JSON.stringify(["0.5 1 1.5 2","0.5 1 1.5 2","0 0.5 1 1.5 2","0 0.5 1 1.5 2","0 0.5 1 1.5 2"]),JSON.stringify(notasComp));
+const leg=await p.$$eval('#view-red .legenda li',ls=>ls.map(l=>l.textContent.replace(/\s+/g," ").trim()));
+ok("Competências: legenda das siglas com a pontuação",JSON.stringify(leg)===JSON.stringify(["I Insuficiente 0,0","D Deficitário 0,5","R Regular 1,0","B Bom 1,5","E Excelente 2,0"]),JSON.stringify(leg));
+const rout=()=>p.innerText('#redOut');
+ok("Estimativa: sem marcar nada pede as notas e desativa o envio",(await rout()).includes("Marque a nota")&&await p.isDisabled('#redUse'));
+for(const [c,n] of [["A",1.5],["B",1],["C",2],["D",1.5],["E",1]])await p.click(`#view-red button[data-c="${c}"][data-n="${n}"]`);
+ok("Estimativa: soma 1,5+1+2+1,5+1 = 7,0 e deixa claro que não é correção",(await rout()).includes("7,0")&&(await rout()).includes("não é uma correção")&&!(await p.isDisabled('#redUse')),await rout());
+await p.click('#view-red button[data-c="E"][data-n="1"]');
+ok("Estimativa: tocar de novo na nota desmarca a competência",(await rout()).includes("faltam: E")&&await p.isDisabled('#redUse'));
+await p.click('#view-red button[data-c="E"][data-n="0.5"]');
+ok("Estimativa: trocar a nota atualiza a soma (6,5)",(await rout()).includes("6,5"),await rout());
+await p.click('#redUse');await p.waitForTimeout(200);
+ok("Estimativa: usar na calculadora preenche a redação e abre a aba",await p.inputValue('#redacao')==="6.5"&&await p.isVisible('#view-calc'),await p.inputValue('#redacao'));
+await p.goto(url+'#competencias');await p.waitForTimeout(200);
+await p.click('#view-red button[data-c="A"][data-n="2"]');await p.click('#redClear');
+ok("Estimativa: limpar volta ao estado inicial",(await rout()).includes("Marque a nota")&&await p.locator('#view-red button[aria-pressed="true"]').count()===0);
+// ===== 6. INSTAGRAM =====
+await p.goto(url+'#calculadora');await p.waitForTimeout(200);
+const igs=await p.$$eval('a.insta',as=>as.map(a=>[a.href,a.target,a.rel,a.offsetParent!==null]));
+ok("Instagram: link no resultado e no rodapé, abrindo em nova aba com segurança",igs.length===2&&igs.every(a=>a[0]==="https://www.instagram.com/redacaocomleo/"&&a[1]==="_blank"&&a[2].includes("noopener")),JSON.stringify(igs));
+await p.evaluate(()=>{location.hash="#cortes"});await p.waitForTimeout(150);
+ok("Instagram: rodapé visível em todas as abas",await p.isVisible('.rodape a.insta'));
+// ===== 7. BOTÃO DE MODO CLARO/ESCURO =====
+{const fundo=pg=>pg.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+ const cl=await b.newContext({colorScheme:'light'}),pl=await cl.newPage();await pl.goto(url);await pl.waitForTimeout(300);
+ const claro=await fundo(pl);
+ await pl.click('#theme');const escuro=await fundo(pl);
+ ok("Tema: clique no botão troca para o escuro",escuro!==claro&&await pl.getAttribute('html','data-theme')==="dark");
+ ok("Tema: rótulo do botão acompanha o modo",(await pl.getAttribute('#theme','aria-label')).includes("claro"));
+ await pl.reload();await pl.waitForTimeout(300);
+ ok("Tema: escolha persiste após recarregar",await fundo(pl)===escuro);
+ await pl.click('#theme');ok("Tema: segundo clique volta ao claro",await fundo(pl)===claro);
+ const cd=await b.newContext({colorScheme:'dark'}),pd=await cd.newPage();await pd.goto(url);await pd.waitForTimeout(300);
+ ok("Tema: sem escolha segue o sistema (escuro)",await fundo(pd)===escuro);
+ await pd.click('#theme');ok("Tema: botão sai do escuro do sistema para o claro",await fundo(pd)===claro);
+ await cl.close();await cd.close();}
 
 ok("Console: nenhum erro de JavaScript",errs.length===0,errs.join(" | "));
 console.log(res.join("\n"));console.log(`\n${res.length-fails}/${res.length} testes passaram`);
