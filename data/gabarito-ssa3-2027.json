@@ -1,0 +1,25 @@
+{
+  "edicao": "SSA 3 2027 — gabarito preliminar",
+  "publicado_em": "2026-11-02",
+  "fontes": [
+    "https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261102_-_GABARITO_PRELIMINAR_-_SSA_3_-_1_DIA_2027.pdf",
+    "https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261102_-_GABARITO_PRELIMINAR_-_SSA_3_-_2_DIA_2027.pdf"
+  ],
+  "legenda": {
+    "d1": "Linguagens 1–17 (1º dia)",
+    "ing": "Linguagens 18–23, Inglês",
+    "esp": "Linguagens 18–23, Espanhol",
+    "hum": "Ciências Humanas 24–45 (1º dia)",
+    "mat": "Matemática 1–23 (2º dia)",
+    "nat": "Ciências da Natureza 24–50 (2º dia)",
+    "*": "questão anulada: conta como acerto para todos"
+  },
+  "chaves": {
+    "d1": "BEDDCCEAEEBCABEDB",
+    "ing": "BCDBCA",
+    "esp": "ACABCE",
+    "hum": "BDDBDEEABCCDEABCCDBDEC",
+    "mat": "ACDDEBBDDCCCBCCDBB*ADEC",
+    "nat": "CBDBEBBBABAEABDEADCCCEDECBB"
+  }
+}

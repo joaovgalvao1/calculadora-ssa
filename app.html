@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora SSA UPE</title>
+<meta name="description" content="Corrija o gabarito do SSA 3 2027 da UPE, calcule sua média global e compare com as notas de corte por curso e modalidade.">
+<!--OG-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+<script src="js/config.js" defer></script>
+<script src="js/utils.js" defer></script>
+<script src="js/calculadora.js" defer></script>
+<script src="js/compartilhar.js" defer></script>
+<script src="js/gabarito.js" defer></script>
+<script src="js/cortes.js" defer></script>
+<script src="js/main.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Sistema Seriado de Avaliação · UPE</div>
+    <h1>Calculadora de notas do SSA</h1>
+    <p>Corrija seu gabarito do SSA 3 ou informe os acertos diretamente. A nota da 3ª fase e a média global acumulada são calculadas na hora, com as fórmulas e pesos pré-definidos.</p>
+    <div class="share">
+      <button class="btn primary" id="share" type="button">Compartilhar com amigos</button>
+      <span class="toast" id="shareToast" role="status"></span>
+    </div>
+    <nav class="tabs" aria-label="Seções">
+      <a href="#calculadora" aria-current="page">Calculadora</a>
+      <a href="#gabarito">Corrigir gabarito</a>
+      <a href="#cortes">Notas de corte</a>
+    </nav>
+  </header>
+
+  <div id="view-calc">
+  <div class="grid">
+    <section class="panel" aria-labelledby="t-in">
+      <div class="group-head">
+        <h2 id="t-in">Dados do candidato</h2>
+        <span class="sample" id="sampleTag">Exemplo preenchido</span>
+      </div>
+      <div class="toast" id="importToast" role="status"></div>
+
+      <div class="group">
+        <div class="group-head"><strong>SSA 3 · acertos por área</strong><span class="hint">Nota máxima por área: 100</span></div>
+        <div id="areas"></div>
+      </div>
+
+      <div class="group">
+        <div class="group-head"><strong>Redação e fases anteriores</strong></div>
+        <div class="row">
+          <label for="redacao">Redação<span class="sub">Nota de 0 a 10, de 1 em 1 ponto (convertida para 0 a 100)</span></label>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-for="redacao" aria-label="Diminuir nota da redação">−</button>
+            <input type="number" id="redacao" inputmode="numeric" min="0" max="10" step="1">
+            <button type="button" data-step="1" data-for="redacao" aria-label="Aumentar nota da redação">+</button>
+          </div>
+        </div>
+        <div class="row field">
+          <label for="ssa1">SSA 1<span class="sub">Nota final da 1ª fase</span></label>
+          <input type="number" id="ssa1" inputmode="decimal" min="0" step="0.01">
+        </div>
+        <div class="row field">
+          <label for="ssa2">SSA 2<span class="sub">Nota final da 2ª fase</span></label>
+          <input type="number" id="ssa2" inputmode="decimal" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="clear" type="button">Limpar tudo</button>
+        <button class="btn" id="example" type="button">Carregar exemplo</button>
+      </div>
+
+      <details>
+        <summary>Fórmulas aplicadas</summary>
+        <ul>
+          <li>Linguagens e Matemática (23 q.): <code>4,52 + (acertos − 1) × 4,34</code></li>
+          <li>Ciências Humanas (22 q.): <code>4,66 + (acertos − 1) × 4,54</code></li>
+          <li>Ciências da Natureza (27 q.): <code>3,80 + (acertos − 1) × 3,70</code></li>
+          <li>0 acertos em qualquer área: nota 0</li>
+          <li>MAS = soma das 4 áreas ÷ 4 · NPR = redação (0 a 10) × 10, na escala de 0 a 100</li>
+          <li>SSA 3 = <code>((MAS × 7,5) + (NPR × 2,5)) ÷ 10</code></li>
+          <li>Média global = <code>((SSA 1 × 3) + (SSA 2 × 3) + (SSA 3 × 4)) ÷ 10</code></li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="panel result" aria-labelledby="t-out" aria-live="polite">
+      <h2 id="t-out">Resultado</h2>
+      <div id="out"></div>
+      <div class="actions">
+        <button class="btn primary" id="copy" type="button">Compartilhar resultado</button>
+        <a class="btn" href="#cortes">Comparar com notas de corte</a>
+      </div>
+      <div class="toast" id="toast"></div>
+    </section>
+  </div>
+  </div>
+
+  <div id="view-gab" hidden>
+    <section class="panel gab" aria-labelledby="t-gab">
+      <div class="gab-top">
+        <div class="block">
+          <h2 id="t-gab">Correção do gabarito · SSA 3 2027</h2>
+          <p class="note">Gabarito preliminar divulgado pela UPE em 02/11/2026. Marque a alternativa que você assinalou em cada questão; a correção aparece na hora. Questão em branco conta como erro.</p>
+        </div>
+        <div class="block">
+          <span class="hint">Língua estrangeira (questões 18 a 23)</span>
+          <div class="seg" id="lang">
+            <button type="button" data-lang="ing" aria-pressed="true">Inglês</button>
+            <button type="button" data-lang="esp" aria-pressed="false">Espanhol</button>
+          </div>
+        </div>
+      </div>
+      <div id="days" class="gab"></div>
+      <p class="note">A questão 19 de Matemática foi anulada no gabarito preliminar e é contada como acerto para todos. Fontes: <a href="https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261102_-_GABARITO_PRELIMINAR_-_SSA_3_-_1_DIA_2027.pdf" target="_blank" rel="noopener">gabarito do 1º dia</a> · <a href="https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261102_-_GABARITO_PRELIMINAR_-_SSA_3_-_2_DIA_2027.pdf" target="_blank" rel="noopener">gabarito do 2º dia</a>.</p>
+      <div class="sendbar">
+        <div class="counts" id="counts"></div>
+        <div class="actions">
+          <button class="btn" id="gabClear" type="button">Limpar marcações</button>
+          <button class="btn primary" id="send" type="button">Enviar acertos para a calculadora</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="view-cortes" hidden>
+    <div class="cortes">
+      <div class="prev-banner" role="note">
+        <span class="prev-tag">Processo seletivo anterior · SSA 2026</span>
+        <span>As notas de corte, vagas e remanejamentos desta aba são do SSA 2026 e servem como referência. Os cortes do SSA 2027 só serão conhecidos após o resultado.</span>
+      </div>
+      <section class="panel" aria-labelledby="t-cortes">
+        <div class="block">
+          <h2 id="t-cortes">Notas de corte do SSA 2026</h2>
+          <p class="note">Escolha o curso e a modalidade de concorrência para comparar sua média global com as notas mínimas de entrada do processo seletivo anterior (2026).</p>
+        </div>
+        <div class="selrow">
+          <div class="fieldc">
+            <label for="cMedia">Sua média global</label>
+            <input type="number" id="cMedia" inputmode="decimal" min="0" max="100" step="0.01" placeholder="Ex.: 68.50">
+            <span class="hint" id="cMediaHint"></span>
+            <button type="button" class="linkbtn" id="cUseCalc" hidden>Usar a média da calculadora</button>
+          </div>
+          <div class="fieldc">
+            <label for="cCurso">Curso e campus</label>
+            <select id="cCurso"></select>
+          </div>
+          <div class="fieldc">
+            <label for="cMod">Modalidade de concorrência</label>
+            <select id="cMod"></select>
+            <span class="hint" id="cModDesc"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="t-cr">
+        <div class="group-head"><h2 id="t-cr">Chamada regular <span class="yr">2026</span></h2><span class="hint">Corte da modalidade escolhida</span></div>
+        <div class="entries" id="cEntries"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="t-rem">
+        <div class="group-head"><h2 id="t-rem">Remanejamentos <span class="yr">2026</span></h2><span class="hint">Passe o mouse ou toque numa barra para ver o corte</span></div>
+        <p class="note">Chance de entrar pela lista de espera: candidatos convocados em cada remanejamento depois da chamada regular.</p>
+        <div class="remgrid">
+          <div class="chartbox">
+            <div class="legend"><span><i class="sw pass"></i>Sua média alcança o corte</span><span><i class="sw base"></i>Não alcança ou sem convocados</span></div>
+            <div class="chartwrap" id="cChartWrap">
+              <svg id="cChart" viewBox="0 0 560 240" role="img" aria-label="Remanejados por fase"></svg>
+              <div class="tip" id="cTip" hidden></div>
+            </div>
+          </div>
+          <aside class="finalcut" id="cFinal" aria-live="polite"></aside>
+        </div>
+      </section>
+
+      <p class="note">Dados do processo seletivo anterior (SSA 2026), usados como referência para o SSA 2027. A nota de corte é a menor nota entre os convocados de cada etapa. Os dados de remanejamentos utilizados abrangem as notas dos convocados da lista de espera (remanejamento externo). Fontes do SSA 2026: listão de classificados, remanejamentos 1 a 10 e Edital CPCA/UPE nº 11/2025.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
