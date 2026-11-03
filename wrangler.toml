@@ -7,4 +7,4 @@ compatibility_date = "2026-10-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "instagram-cliques"
-database_id = "00000000-00000006-00005118-a87958afe8fc88f4dc84dbd4029a73c9"
+database_id = "db9c67af-1fd2-4f89-b15f-a54b57947427"
