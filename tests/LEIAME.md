@@ -23,3 +23,13 @@ npm install --no-save wrangler playwright
 npx wrangler pages dev . --port 8788 &
 node tests/teste-completo.cjs http://localhost:8788/
 ```
+
+## Contador de cliques e painel privado (Cloudflare)
+
+`functions/instagram.js` conta os cliques no Instagram em um banco D1 e `functions/cliques.js` mostra os números em
+`/cliques?k=CHAVE` (a chave é o segredo `PAINEL_CHAVE`). Teste local, com banco e chave de mentira:
+
+```bash
+npx wrangler pages dev . --port 8788 --binding PAINEL_CHAVE=chave-de-teste --d1 DB=teste-local &
+node tests/teste-cliques.mjs http://localhost:8788 chave-de-teste
+```
