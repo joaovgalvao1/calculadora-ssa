@@ -52,11 +52,11 @@
       <div class="group">
         <div class="group-head"><strong>Redação e fases anteriores</strong></div>
         <div class="row">
-          <label for="redacao">Redação<span class="sub">Nota de 0 a 10, de 1 em 1 ponto (convertida para 0 a 100)</span></label>
+          <label for="redacao">Redação<span class="sub">Nota de 0 a 10 (convertida para 0 a 100)</span></label>
           <div class="stepper">
-            <button type="button" data-step="-1" data-for="redacao" aria-label="Diminuir nota da redação">−</button>
-            <input type="number" id="redacao" inputmode="numeric" min="0" max="10" step="1">
-            <button type="button" data-step="1" data-for="redacao" aria-label="Aumentar nota da redação">+</button>
+            <button type="button" data-step="-0.5" data-for="redacao" aria-label="Diminuir nota da redação">−</button>
+            <input type="number" id="redacao" inputmode="decimal" min="0" max="10" step="0.5">
+            <button type="button" data-step="0.5" data-for="redacao" aria-label="Aumentar nota da redação">+</button>
           </div>
         </div>
         <div class="row field">
