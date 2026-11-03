@@ -32,7 +32,7 @@ export function imagem(m, logo) {
           h("div", { fontFamily: "Sans", fontWeight: 500, fontSize: 29, color: C.muted, lineHeight: 1.35 },
             "Corrija o gabarito do SSA 3, calcule sua média global e compare com as notas de corte do seu curso.")),
         logoGrande),
-      h("div", { gap: 12 }, chip("Gabarito 2027"), chip("Média global"), chip("Notas de corte")));
+      h("div", { gap: 12 }, chip("Gabarito 2027"), chip("Média global"), chip("Competências"), chip("Notas de corte")));
   }
 
   return h("div", { width: "100%", height: "100%", background: C.bg, flexDirection: "column", justifyContent: "space-between", padding: "60px 72px" },
