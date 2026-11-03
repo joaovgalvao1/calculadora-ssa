@@ -21,8 +21,8 @@ $("areas").innerHTML=AREAS.map(a=>`
 
 document.querySelectorAll("[data-step]").forEach(b=>b.addEventListener("click",()=>{
   const inp=$(b.dataset.for),max=+inp.max;
-  let v=inp.value===""?0:parseInt(inp.value,10)||0;
-  v=Math.min(max,Math.max(0,v+ +b.dataset.step));
+  let v=parseFloat(inp.value.replace(",","."))||0;
+  v=Math.min(max,Math.max(0,Math.round((v+ +b.dataset.step)*100)/100));
   inp.value=v;onEdit();
 }));
 
