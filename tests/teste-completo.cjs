@@ -256,6 +256,7 @@ const igs=await p.$$eval('a.insta',as=>as.map(a=>[a.href,a.target,a.rel,a.offset
 ok("Instagram: link no resultado e no rodapé, abrindo em nova aba com segurança",igs.length===2&&igs.every(a=>a[0]==="https://www.instagram.com/redacaocomleo/"&&a[1]==="_blank"&&a[2].includes("noopener")),JSON.stringify(igs));
 await p.evaluate(()=>{location.hash="#cortes"});await p.waitForTimeout(150);
 ok("Instagram: rodapé visível em todas as abas",await p.isVisible('.rodape a.insta'));
+ok("Aviso: site independente, sem vínculo com a UPE, visível na aba de notas de corte",(await p.innerText('.aviso')).includes("sem vínculo com a UPE")&&await p.isVisible('.aviso'));
 // ===== 7. BOTÃO DE MODO CLARO/ESCURO =====
 {const fundo=pg=>pg.evaluate(()=>getComputedStyle(document.body).backgroundColor);
  const cl=await b.newContext({colorScheme:'light'}),pl=await cl.newPage();await pl.goto(url);await pl.waitForTimeout(300);

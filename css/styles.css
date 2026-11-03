@@ -111,6 +111,7 @@ a.btn{text-decoration:none;display:inline-flex;align-items:center}
 .promo p{margin:0;font-weight:600}
 .insta{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-weight:600;text-decoration:none}
 .insta:hover{text-decoration:underline}
+.aviso{margin:0;color:var(--muted);font-size:13px;text-align:center;text-wrap:balance}
 .rodape{position:sticky;bottom:0;z-index:4;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--bg);border-top:1px solid var(--line);padding:12px 0;color:var(--muted);font-size:14px}
 @media (max-width:460px){.rodape{font-size:13px;gap:8px}.rodape span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 .crits{display:grid;gap:0}
