@@ -23,7 +23,9 @@ async function carregarJSON(url){
 }
 
 async function iniciar(){
-  // A calculadora funciona mesmo se os dados das outras abas não carregarem.
+  // A calculadora aparece na hora (sem esperar os dados) e funciona mesmo se as outras abas não carregarem.
+  rota();
+  preencher(EXEMPLO);
   const [gab,cortes]=await Promise.allSettled([
     carregarJSON("data/gabarito-ssa3-2027.json"),
     carregarJSON("data/cortes-ssa3-2026.json")
@@ -32,7 +34,7 @@ async function iniciar(){
   else $("days").innerHTML='<p class="pending">Não foi possível carregar o gabarito. Recarregue a página.</p>';
   if(cortes.status==="fulfilled"){CORTES=montarCortes(cortes.value);initCortes();}
   else document.querySelector(".cortes").innerHTML='<p class="pending">Não foi possível carregar as notas de corte. Recarregue a página.</p>';
-  rota();
-  preencher(EXEMPLO);
+  rota();      // refaz a rota: a aba de notas de corte só desenha depois que os dados chegam
+  syncMedia(); // leva a média da calculadora para a aba de notas de corte
 }
 iniciar();

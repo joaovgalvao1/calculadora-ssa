@@ -2,3 +2,9 @@
 name = "redacaocomleo-calculadora"
 pages_build_output_dir = "."
 compatibility_date = "2026-10-01"
+
+# Contador de cliques no Instagram (functions/instagram.js).
+[[d1_databases]]
+binding = "DB"
+database_name = "instagram-cliques"
+database_id = "00000000-00000006-00005118-a87958afe8fc88f4dc84dbd4029a73c9"

@@ -253,7 +253,10 @@ if(MODE!=="artifact"){
 // ===== 6. INSTAGRAM =====
 await p.goto(url+'#calculadora');await p.waitForTimeout(200);
 const igs=await p.$$eval('a.insta',as=>as.map(a=>[a.href,a.target,a.rel,a.offsetParent!==null]));
-ok("Instagram: link no resultado e no rodapé, abrindo em nova aba com segurança",igs.length===2&&igs.every(a=>a[0]==="https://www.instagram.com/redacaocomleo/"&&a[1]==="_blank"&&a[2].includes("noopener")),JSON.stringify(igs));
+ok("Instagram: links no resultado e no rodapé passam pelo contador (/instagram) e abrem em nova aba com segurança",igs.length===2&&igs.map(a=>new URL(a[0]).pathname+new URL(a[0]).search).sort().join()==="/instagram?de=resultado,/instagram?de=rodape"&&igs.every(a=>a[1]==="_blank"&&a[2].includes("noopener")),JSON.stringify(igs));
+if(MODE!=="artifact"){const orig=new URL(url).origin;
+ const rd=await p.request.get(orig+'/instagram?de=rodape',{maxRedirects:0});
+ ok("Instagram: /instagram redireciona (302) para o perfil do professor",rd.status()===302&&rd.headers()["location"]==="https://www.instagram.com/redacaocomleo/",rd.status()+" "+rd.headers()["location"]);}
 await p.evaluate(()=>{location.hash="#cortes"});await p.waitForTimeout(150);
 ok("Instagram: rodapé visível em todas as abas",await p.isVisible('.rodape a.insta'));
 ok("Aviso: site independente, sem vínculo com a UPE, visível na aba de notas de corte",(await p.innerText('.aviso')).includes("sem vínculo com a UPE")&&await p.isVisible('.aviso'));

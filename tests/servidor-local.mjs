@@ -9,6 +9,7 @@ const page=(await import(D+'/api/page.js')).default, og=(await import(D+'/api/og
 const cfg=JSON.parse(fs.readFileSync(D+'/vercel.json'));
 http.createServer(async(req,res)=>{
   let u=new URL(req.url,`http://localhost:${PORT}`);let p=u.pathname;
+  if(p==='/instagram'){res.writeHead(302,{location:'https://www.instagram.com/redacaocomleo/'});return res.end();} // simula functions/instagram.js (sem contador)
   const f=path.join(D,p);
   if(p!=='/'&&fs.existsSync(f)&&fs.statSync(f).isFile()&&!p.startsWith('/api/')){
     const ct={'.html':'text/html; charset=utf-8','.woff':'font/woff','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png'}[path.extname(f)]||'application/octet-stream';
