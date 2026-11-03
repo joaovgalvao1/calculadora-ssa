@@ -1,4 +1,4 @@
-// Serve a calculadora (app.html) com as etiquetas de preview (Open Graph).
+// Serve a calculadora (index.html) com as etiquetas de preview (Open Graph).
 // /             → preview geral do site
 // /nota/70.15   → preview com a média global de quem compartilhou
 import { lerNota, fmt } from "./_comum.js";
@@ -29,8 +29,8 @@ export function etiquetas(origin, m) {
 export default async function handler(req) {
   const origin = new URL(req.url).origin;
   const m = lerNota(req.url);
-  const res = await fetch(new URL("/app.html", origin));
-  if (!res.ok) return Response.redirect(new URL("/app.html", origin), 302);
+  const res = await fetch(new URL("/index.html", origin));
+  if (!res.ok) return Response.redirect(new URL("/index.html", origin), 302);
   // <base href="/"> mantém css/, js/ e data/ funcionando também em /nota/70.15
   const html = (await res.text()).replace("<!--OG-->", `<base href="/">\n${etiquetas(origin, m)}`);
   return new Response(html, {
