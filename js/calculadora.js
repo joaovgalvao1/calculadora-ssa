@@ -41,6 +41,16 @@ function lerArea(a){
   if(!Number.isInteger(v)||v<0||v>a.total){setErr(el,`Informe um número inteiro de 0 a ${a.total}.`);return {erro:true};}
   setErr(el,"");return {v};
 }
+
+// Redação: 0 a 10, de 0,5 em 0,5 (aceita vírgula ou ponto)
+function lerRedacao(){
+  const el=$("redacao"),raw=el.value.trim().replace(",",".");
+  if(raw===""){setErr(el,"");return {vazio:true};}
+  const v=Number(raw);
+  if(!isFinite(v)||v<0||v>10||!Number.isInteger(v*2)){setErr(el,"Informe uma nota de 0 a 10, de 0,5 em 0,5 (ex.: 7,5).");return {erro:true};}
+  setErr(el,"");return {v};
+}
+
 function lerNota(id,max){
   const el=$(id),raw=el.value.trim().replace(",",".");
   if(raw===""){setErr(el,"");return {vazio:true};}
@@ -51,7 +61,7 @@ function lerNota(id,max){
 
 function calcular(){
   const ac=AREAS.map(lerArea);
-  const red=lerArea({id:"redacao",total:10}),ssa1=lerNota("ssa1",null),ssa2=lerNota("ssa2",null);
+  const red=lerRedacao(),ssa1=lerNota("ssa1",null),ssa2=lerNota("ssa2",null);
   const faltando=[];
   AREAS.forEach((a,i)=>{if(ac[i].vazio)faltando.push(`acertos em ${a.nome}`)});
   if(red.vazio)faltando.push("nota da redação");
@@ -102,7 +112,7 @@ function calcular(){
       <div class="ar">
         <div class="ar-top"><span class="ar-n">Redação</span><span class="num">${npr}</span></div>
         <div class="meter"><span style="width:${pct(npr)}%"></span></div>
-        <span class="ar-s">Nota ${red.v} de 10, convertida para 0 a 100</span>
+        <span class="ar-s">Nota ${red.v.toLocaleString("pt-BR")} de 10, convertida para 0 a 100</span>
       </div>
       <div class="r-sum">
         <div><span>Média das provas (MAS)</span><span class="num">${fmt(mas)} <small>× 75%</small></span></div>
