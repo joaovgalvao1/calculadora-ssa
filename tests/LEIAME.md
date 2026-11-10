@@ -33,3 +33,12 @@ node tests/teste-completo.cjs http://localhost:8788/
 npx wrangler pages dev . --port 8788 --binding PAINEL_CHAVE=chave-de-teste --d1 DB=teste-local &
 node tests/teste-cliques.mjs http://localhost:8788 chave-de-teste
 ```
+
+## Gabarito em colunas, no Chromium e no Firefox
+
+A lista de questões é uma grade calculada em JavaScript (`ajustarColunas` em `js/gabarito.js`), porque as colunas CSS cortavam a primeira linha da 3ª coluna no Firefox. Este teste confere a ordem das questões e o uso da grade nos dois navegadores:
+
+```bash
+npx playwright install chromium firefox
+node tests/teste-gabarito-colunas.cjs http://localhost:3000/
+```

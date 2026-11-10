@@ -20,8 +20,19 @@ function renderGab(){
             `<button type="button" class="b" data-a="${g.id}" data-i="${i}" data-l="${l}" aria-label="Alternativa ${l}">${l}</button>`).join("")}</div>
           <span class="st"></span></div>`;}).join("")}</div></div>`).join("")}</div>`).join("");
   GAREAS.forEach(g=>[...keyOf(g.id)].forEach((_,i)=>pintar(g.id,i)));
-  atualizarContagem();
+  atualizarContagem();ajustarColunas();
 }
+// Distribui as questões em colunas de pelo menos 270 px, descendo cada coluna antes de passar à seguinte.
+const COL_MIN=270,COL_GAP=28;
+function ajustarColunas(){
+  document.querySelectorAll("#days .qs").forEach(el=>{
+    const w=el.clientWidth;if(!w)return; // aba escondida: ajusta quando aparecer
+    const cols=Math.max(1,Math.floor((w+COL_GAP)/(COL_MIN+COL_GAP)));
+    el.style.setProperty("--cols",cols);el.style.setProperty("--rows",Math.ceil(el.children.length/cols));
+    el.classList.add("colunado");
+  });
+}
+new ResizeObserver(ajustarColunas).observe($("days")); // roda ao abrir a aba e ao mudar a largura da tela
 function pintar(a,i){
   const row=$(`q-${a}-${i}`),key=keyOf(a)[i],m=marks[`${a}-${i}`];
   row.className="q"+(key==="*"?" nula":m?(m===key?" ok":" bad"):"");
