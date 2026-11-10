@@ -59,7 +59,29 @@ function lerNota(id,max){
   setErr(el,"");return {v};
 }
 
+/* Lembra o que a pessoa digitou neste navegador (nada é enviado a servidor). O exemplo e os campos vazios não são salvos. */
+const CALC_KEY="ssa-calc-v1",CAMPOS=[...AREAS.map(a=>a.id),"redacao","ssa1","ssa2"];
+function salvarCalc(){
+  try{
+    const d={};CAMPOS.forEach(k=>d[k]=$(k).value.trim());
+    if(!$("sampleTag").hidden||CAMPOS.every(k=>d[k]===""))localStorage.removeItem(CALC_KEY);
+    else localStorage.setItem(CALC_KEY,JSON.stringify(d));
+  }catch(e){}
+}
+// Devolve true se havia dados salvos e eles foram colocados nos campos.
+function restaurarCalc(){
+  try{
+    const s=JSON.parse(localStorage.getItem(CALC_KEY)||"null");
+    if(!s||typeof s!=="object")return false;
+    let algum=false;
+    CAMPOS.forEach(k=>{const v=s[k],t=(typeof v==="string"||typeof v==="number")?String(v).slice(0,8):"";$(k).value=t;if(t!=="")algum=true;});
+    if(!algum)return false;
+    $("sampleTag").hidden=true;calcular();return true;
+  }catch(e){return false;}
+}
+
 function calcular(){
+  salvarCalc();
   const ac=AREAS.map(lerArea);
   const red=lerRedacao(),ssa1=lerNota("ssa1",null),ssa2=lerNota("ssa2",null);
   const faltando=[];

@@ -7,7 +7,7 @@ npm install                                   # instala @vercel/og (usado pelo s
 npm install --no-save playwright              # navegador de testes, fora do package.json
 npx playwright install chromium
 node tests/servidor-local.mjs &               # simula o Vercel em http://localhost:3000
-node tests/teste-completo.cjs                  # roda a bateria (100 testes)
+node tests/teste-completo.cjs                  # roda a bateria (110 testes)
 ```
 
 O que a bateria cobre: fórmulas da calculadora, validações, correção do gabarito (incluindo anulada e Inglês/Espanhol),

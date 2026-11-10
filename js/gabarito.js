@@ -1,4 +1,4 @@
-/* ===== Correção do gabarito (preliminar SSA 3 2027) — "*" = anulada ===== */
+/* ===== Correção do gabarito (definitivo SSA 3 2027) — "*" = anulada ===== */
 let KEYS=null; // carregado de data/gabarito-ssa3-2027.json (ver main.js)
 const GAREAS=[{id:"ling",dia:1,start:1},{id:"hum",dia:1,start:24},{id:"mat",dia:2,start:1},{id:"nat",dia:2,start:24}];
 const CURTO={ling:"Linguagens",hum:"Humanas",mat:"Matemática",nat:"Natureza"};

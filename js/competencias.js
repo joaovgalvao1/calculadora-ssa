@@ -4,6 +4,18 @@
 const COMP_IDS=["A","B","C","D","E"];
 const f1=n=>n.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1});
 let niveis={},estimativa=null;
+const COMP_KEY="ssa-competencias-v1";
+const salvarComp=()=>{try{if(Object.keys(niveis).length)localStorage.setItem(COMP_KEY,JSON.stringify(niveis));else localStorage.removeItem(COMP_KEY);}catch(e){}};
+function restaurarComp(){
+  try{
+    const s=JSON.parse(localStorage.getItem(COMP_KEY)||"null");
+    if(!s||typeof s!=="object")return;
+    COMP_IDS.forEach(c=>{
+      const b=document.querySelector(`#view-red button[data-c="${c}"][data-n="${s[c]}"]`); // só aceita notas que existem nos botões
+      if(b){niveis[c]=+b.dataset.n;b.setAttribute("aria-pressed","true");}
+    });
+  }catch(e){}
+}
 
 function renderEstimativa(){
   const falta=COMP_IDS.filter(c=>niveis[c]==null);
@@ -19,10 +31,10 @@ $("view-red").addEventListener("click",e=>{
   const c=b.dataset.c,n=+b.dataset.n,ja=niveis[c]===n;
   document.querySelectorAll(`#view-red button[data-c="${c}"]`).forEach(x=>x.setAttribute("aria-pressed","false"));
   if(ja)delete niveis[c];else{niveis[c]=n;b.setAttribute("aria-pressed","true");}
-  renderEstimativa();
+  renderEstimativa();salvarComp();
 });
 $("redClear").addEventListener("click",()=>{
-  niveis={};document.querySelectorAll("#view-red button[data-c]").forEach(x=>x.setAttribute("aria-pressed","false"));renderEstimativa();
+  niveis={};document.querySelectorAll("#view-red button[data-c]").forEach(x=>x.setAttribute("aria-pressed","false"));renderEstimativa();salvarComp();
 });
 $("redUse").addEventListener("click",()=>{
   if(estimativa==null)return;
@@ -33,4 +45,5 @@ $("redUse").addEventListener("click",()=>{
   location.hash="#calculadora";window.scrollTo(0,0);
   $("importToast").textContent=`Estimativa da redação importada (${f1(estimativa)}).`+(eraExemplo?" Agora informe os acertos e as notas do SSA 1 e SSA 2.":"");
 });
+restaurarComp();
 renderEstimativa();

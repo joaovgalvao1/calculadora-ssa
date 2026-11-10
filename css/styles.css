@@ -159,9 +159,9 @@ a{color:var(--accent)}
 .day{display:grid;gap:16px}
 .day>h3{font-family:var(--f-display);font-size:18px;margin:0}
 .area-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line)}
-.qs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:2px 28px}
-@media (max-width:420px){.qs{grid-template-columns:1fr}}
-.q{display:flex;align-items:center;gap:10px;padding:5px 0;min-width:0}
+/* colunas de 270 px: as questões descem a 1ª coluna, depois a 2ª e a 3ª (1, 2, 3… de cima para baixo) */
+.qs{columns:270px;column-gap:28px}
+.q{display:flex;align-items:center;gap:10px;padding:5px 0;margin-bottom:2px;min-width:0;break-inside:avoid}
 .q .n{font-family:var(--f-mono);width:2.6em;flex:none;color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px;line-height:1.1}
 .q .n .sub{display:block;font-size:10px}
 .bubbles{display:flex;gap:6px;flex:none}

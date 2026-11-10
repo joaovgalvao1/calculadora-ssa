@@ -71,8 +71,11 @@ else ok("Compartilhar site: link = página inicial do site",clip2.trim().endsWit
 // ===== 2. GABARITO =====
 await p.goto(url+'#gabarito');await p.waitForTimeout(300);
 ok("Rota: #gabarito mostra só a correção",await p.isVisible('#view-gab')&&!(await p.isVisible('#view-calc'))&&!(await p.isVisible('#view-cortes')));
-const K={d1:"BEDDCCEAEEBCABEDB",ing:"BCDBCA",esp:"ACABCE",hum:"BDDBDEEABCCDEABCCDBDEC",mat:"ACDDEBBDDCCCBCCDBB*ADEC",nat:"CBDBEBBBABAEABDEADCCCEDECBB"};
-ok("Gabarito: 19 de Matemática começa contando 1 acerto",(await p.innerText('#c-mat')).startsWith("1/23"),await p.innerText('#c-mat'));
+const K={d1:"BEDDCCEAEEBCABEDB",ing:"BCEBCA",esp:"ACABCE",hum:"BDDBDEEABCCDEABCCDBDEC",mat:"ACDDEBBDDCCCBCCDBB*ADEC",nat:"CBDBEBBBABAEABDEADCCC*DECBB"};
+ok("Gabarito: 19 de Matemática e 45 de Natureza (anuladas) começam contando 1 acerto cada",(await p.innerText('#c-mat')).startsWith("1/23")&&(await p.innerText('#c-nat')).startsWith("1/27"),await p.innerText('#c-mat')+" "+await p.innerText('#c-nat'));
+const ordem=await p.$$eval('[id^="q-ling-"]',qs=>{const cols=new Map();qs.forEach(q=>{const r=q.getBoundingClientRect(),x=Math.round(r.left);if(!cols.has(x))cols.set(x,[]);cols.get(x).push([r.top,+q.querySelector('.n').firstChild.textContent])});return [...cols.entries()].sort((a,b)=>a[0]-b[0]).map(([,v])=>v.sort((a,b)=>a[0]-b[0]).map(e=>e[1]))});
+const seq=(a,b)=>Array.from({length:b-a+1},(_,i)=>a+i);
+ok("Gabarito: Linguagens desce a 1ª coluna (1–8), depois a 2ª (9–16) e a 3ª (17–23)",JSON.stringify(ordem)===JSON.stringify([seq(1,8),seq(9,16),seq(17,23)]),JSON.stringify(ordem));
 const marcar=async(a,key)=>{for(let i=0;i<key.length;i++){if(key[i]==="*")continue;await p.click(`.b[data-a="${a}"][data-i="${i}"][data-l="${key[i]}"]`);}};
 await marcar("ling",K.d1+K.ing);await marcar("hum",K.hum);await marcar("mat",K.mat);await marcar("nat",K.nat);
 const cnt=async a=>(await p.innerText('#c-'+a));
@@ -85,7 +88,7 @@ await p.click('#lang button[data-lang="ing"]');
 // errar uma
 await p.click('.b[data-a="nat"][data-i="0"][data-l="A"]');
 ok("Gabarito: erro marca vermelho e mostra a certa",(await p.innerText('#q-nat-0')).includes("era C")&&(await cnt('nat')).startsWith("26/27"));
-ok("Gabarito: alternativas da anulada desativadas",await p.isDisabled('.b[data-a="mat"][data-i="18"][data-l="A"]'));
+ok("Gabarito: alternativas das anuladas desativadas (19 Matemática e 45 Natureza)",await p.isDisabled('.b[data-a="mat"][data-i="18"][data-l="A"]')&&await p.isDisabled('.b[data-a="nat"][data-i="21"][data-l="A"]'));
 // desmarcar com segundo clique
 await p.click('.b[data-a="nat"][data-i="0"][data-l="A"]');
 ok("Gabarito: 2º toque desmarca (branco = erro)",(await cnt('nat')).startsWith("26/27"));
@@ -274,6 +277,31 @@ ok("Aviso: site independente, sem vínculo com a UPE, visível na aba de notas d
  ok("Tema: sem escolha segue o sistema (escuro)",await fundo(pd)===escuro);
  await pd.click('#theme');ok("Tema: botão sai do escuro do sistema para o claro",await fundo(pd)===claro);
  await cl.close();await cd.close();}
+
+// ===== 8. MEMÓRIA DO NAVEGADOR (o que a pessoa digitou volta ao reabrir) =====
+await p.goto(url);await p.evaluate(()=>localStorage.clear());await p.reload();await p.waitForTimeout(400);
+ok("Memória: sem nada salvo, mostra o exemplo preenchido",await p.isVisible('#sampleTag')&&await p.inputValue('#ling')==="17");
+await fill({ling:20,hum:18,mat:19,nat:22,redacao:7.5,ssa1:80,ssa2:82});
+await p.reload();await p.waitForTimeout(400);
+const vals=async()=>[await p.inputValue('#ling'),await p.inputValue('#hum'),await p.inputValue('#mat'),await p.inputValue('#nat'),await p.inputValue('#redacao'),await p.inputValue('#ssa1'),await p.inputValue('#ssa2')].join();
+ok("Memória: a calculadora volta com o que foi digitado (sem o selo de exemplo)",await vals()==="20,18,19,22,7.5,80,82"&&!(await p.isVisible('#sampleTag')),await vals());
+ok("Memória: o resultado já aparece calculado",(await p.innerText('#out')).includes(fmt(esperado(20,18,19,22,7.5,80,82).media)));
+await p.click('#clear');await p.reload();await p.waitForTimeout(400);
+ok("Memória: Limpar tudo apaga o que estava salvo (volta ao exemplo)",await p.isVisible('#sampleTag')&&await p.inputValue('#ling')==="17");
+await fill({ling:5,hum:5,mat:5,nat:5,redacao:5,ssa1:50,ssa2:50});await p.click('#example');await p.reload();await p.waitForTimeout(400);
+ok("Memória: Carregar exemplo não fica salvo como se fosse da pessoa",await p.isVisible('#sampleTag'));
+await p.goto(url+'#competencias');await p.waitForTimeout(200);
+for(const [c,n] of [["A",1.5],["B",1],["C",2],["D",1.5],["E",1]])await p.click(`#view-red button[data-c="${c}"][data-n="${n}"]`);
+await p.reload();await p.waitForTimeout(400);
+ok("Memória: as competências marcadas voltam e a estimativa aparece (7,0)",await p.locator('#view-red button[aria-pressed="true"]').count()===5&&(await p.innerText('#redOut')).includes("7,0"));
+await p.click('#redClear');await p.reload();await p.waitForTimeout(400);
+ok("Memória: limpar as competências também limpa o que estava salvo",await p.locator('#view-red button[aria-pressed="true"]').count()===0);
+await p.goto(url+'#cortes');await p.waitForTimeout(300);
+await p.fill('#cMedia','61.5');await p.reload();await p.waitForTimeout(400);
+ok("Memória: a média digitada nas notas de corte volta",await p.inputValue('#cMedia')==="61.5"&&(await p.innerText('#cMediaHint')).includes("digitado por você"),await p.inputValue('#cMedia'));
+await p.fill('#cMedia','120');await p.reload();await p.waitForTimeout(400);
+ok("Memória: média inválida não fica salva",await p.inputValue('#cMedia')!=="120");
+await p.evaluate(()=>localStorage.clear());
 
 ok("Console: nenhum erro de JavaScript",errs.length===0,errs.join(" | "));
 console.log(res.join("\n"));console.log(`\n${res.length-fails}/${res.length} testes passaram`);

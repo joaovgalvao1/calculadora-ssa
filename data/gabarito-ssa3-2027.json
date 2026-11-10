@@ -1,9 +1,9 @@
 {
-  "edicao": "SSA 3 2027 — gabarito preliminar",
-  "publicado_em": "2026-11-02",
+  "edicao": "SSA 3 2027 — gabarito definitivo",
+  "publicado_em": "2026-11-10",
   "fontes": [
-    "https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261102_-_GABARITO_PRELIMINAR_-_SSA_3_-_1_DIA_2027.pdf",
-    "https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261102_-_GABARITO_PRELIMINAR_-_SSA_3_-_2_DIA_2027.pdf"
+    "https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261110_-_Gabarito_Definitivo_-_SSA-3_2027_Dia_1.pdf",
+    "https://processodeingresso.upe.pe.gov.br/arquivos/ssa3_2027/20261110_-_Gabarito_Definitivo_-_SSA-3_2027_Dia_2.pdf"
   ],
   "legenda": {
     "d1": "Linguagens 1–17 (1º dia)",
@@ -16,10 +16,10 @@
   },
   "chaves": {
     "d1": "BEDDCCEAEEBCABEDB",
-    "ing": "BCDBCA",
+    "ing": "BCEBCA",
     "esp": "ACABCE",
     "hum": "BDDBDEEABCCDEABCCDBDEC",
     "mat": "ACDDEBBDDCCCBCCDBB*ADEC",
-    "nat": "CBDBEBBBABAEABDEADCCCEDECBB"
+    "nat": "CBDBEBBBABAEABDEADCCC*DECBB"
   }
 }

@@ -25,7 +25,7 @@ async function carregarJSON(url){
 async function iniciar(){
   // A calculadora aparece na hora (sem esperar os dados) e funciona mesmo se as outras abas não carregarem.
   rota();
-  preencher(EXEMPLO);
+  if(!restaurarCalc())preencher(EXEMPLO); // volta ao que a pessoa tinha digitado; sem nada salvo, mostra o exemplo
   const [gab,cortes]=await Promise.allSettled([
     carregarJSON("data/gabarito-ssa3-2027.json"),
     carregarJSON("data/cortes-ssa3-2026.json")

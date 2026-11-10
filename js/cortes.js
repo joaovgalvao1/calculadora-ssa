@@ -31,7 +31,11 @@ const ofKey=o=>`${o.c}|${o.cp}|${o.t}`;
 let mediaCalc=null,mediaManual=false,selOf=null,selMod="UNI",cortesProntos=false;
 
 function initCortes(){
-  try{const s=JSON.parse(localStorage.getItem("ssa-cortes-sel")||"null");if(s){selOf=s.of;selMod=s.mod||"UNI";}}catch(e){}
+  try{
+    const s=JSON.parse(localStorage.getItem("ssa-cortes-sel")||"null");
+    if(s){selOf=s.of;selMod=s.mod||"UNI";}
+    if(s&&typeof s.media==="string"&&s.media!==""){mediaManual=true;$("cMedia").value=s.media.slice(0,8);} // média digitada por você
+  }catch(e){}
   if(!CORTES.ofertas.some(o=>ofKey(o)===selOf))selOf=ofKey(CORTES.ofertas.find(o=>o.c==="Medicina"&&o.cp==="Santo Amaro")||CORTES.ofertas[0]);
   $("cCurso").innerHTML=CORTES.ofertas.map(o=>`<option value="${ofKey(o)}">${o.c} · ${o.cp} · ${o.t}</option>`).join("");
   $("cMod").innerHTML=Object.keys(CORTES.mods).map(m=>`<option value="${m}">${MOD_CURTO[m]||m}</option>`).join("");
@@ -39,14 +43,17 @@ function initCortes(){
   $("cCurso").value=selOf;$("cMod").value=selMod;
   $("cCurso").addEventListener("change",e=>{selOf=e.target.value;salvarSel();renderCortes();});
   $("cMod").addEventListener("change",e=>{selMod=e.target.value;salvarSel();renderCortes();});
-  $("cMedia").addEventListener("input",()=>{mediaManual=true;mediaHint();renderCortes();});
-  $("cUseCalc").addEventListener("click",()=>{mediaManual=false;syncMedia();});
+  $("cMedia").addEventListener("input",()=>{mediaManual=true;mediaHint();renderCortes();salvarSel();});
+  $("cUseCalc").addEventListener("click",()=>{mediaManual=false;syncMedia();salvarSel();});
   const wrap=$("cChartWrap");
   document.addEventListener("click",e=>{if(!wrap.contains(e.target))esconderTip();});
   let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(renderCortes,150);});
   cortesProntos=true;
 }
-function salvarSel(){try{localStorage.setItem("ssa-cortes-sel",JSON.stringify({of:selOf,mod:selMod}));}catch(e){}}
+function salvarSel(){
+  const raw=$("cMedia").value.trim(),n=Number(raw.replace(",","."));
+  const media=mediaManual&&raw!==""&&isFinite(n)&&n>=0&&n<=100?raw:""; // só lembra uma média válida digitada por você
+  try{localStorage.setItem("ssa-cortes-sel",JSON.stringify({of:selOf,mod:selMod,media}));}catch(e){}}
 function syncMedia(){
   if(!cortesProntos)return;
   if(!mediaManual)$("cMedia").value=mediaCalc==null?"":(Math.round(mediaCalc*100)/100).toFixed(2);
